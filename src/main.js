@@ -41,6 +41,7 @@ async function onSearch(event) {
 
   currentQuery = query;
   currentPage = 1;
+  totalHits = 0;
 
   clearGallery();
   hideLoadMoreButton();
@@ -52,9 +53,10 @@ async function onSearch(event) {
       currentPage
     );
 
-    totalHits = total;
+    totalHits = total ?? 0;
 
     if (!hits || hits.length === 0) {
+      hideLoadMoreButton();
       iziToast.error({
         message:
           'Sorry, there are no images matching your search query. Please try again!',
@@ -65,9 +67,9 @@ async function onSearch(event) {
 
     createGallery(hits);
 
-    const isAllLoaded = hits.length >= totalHits;
+    const loadedItems = document.querySelectorAll('.gallery a').length;
 
-    if (isAllLoaded) {
+    if (loadedItems >= totalHits) {
       hideLoadMoreButton();
       iziToast.info({
         message: "We're sorry, but you've reached the end of search results.",
@@ -77,6 +79,7 @@ async function onSearch(event) {
       showLoadMoreButton();
     }
   } catch (error) {
+    hideLoadMoreButton();
     iziToast.error({
       title: 'Error',
       message:
@@ -97,6 +100,15 @@ async function loadMoreBtnClickHandler() {
   try {
     const { hits } = await getImagesByQuery(currentQuery, currentPage);
 
+    if (!hits || hits.length === 0) {
+      iziToast.info({
+        message: "We're sorry, but there are no more images to load.",
+        position: 'topRight',
+      });
+      hideLoadMoreButton();
+      return;
+    }
+
     createGallery(hits);
 
     const loadedItems = document.querySelectorAll('.gallery a').length;
@@ -114,7 +126,6 @@ async function loadMoreBtnClickHandler() {
     const firstItem = document.querySelector('.gallery a');
     if (firstItem) {
       const { height: itemHeight } = firstItem.getBoundingClientRect();
-
       scrollBy({
         top: itemHeight * 2,
         behavior: 'smooth',
