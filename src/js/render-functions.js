@@ -1,12 +1,9 @@
 // Описаний у документації
 import SimpleLightbox from 'simplelightbox';
-// Додатковий імпорт стилів
 import 'simplelightbox/dist/simple-lightbox.min.css';
 
 const mainGallery = document.querySelector('.gallery');
-const loaderEl = document.querySelector('.loader');
 const loadMoreBtn = document.querySelector('.load-more-button');
-const loadMoreLoaderEl = document.querySelector('.load-more-loader');
 
 const simpleLightbox = new SimpleLightbox('.gallery a', {
   captionsData: 'alt',
@@ -40,8 +37,7 @@ export function createGallery(images) {
           <p class="details-item"><b>Comments</b> ${comments}</p>
           <p class="details-item"><b>Downloads</b> ${downloads}</p>
         </div>
-      </li>
-    `;
+      </li>`;
     })
     .join('');
 
@@ -62,10 +58,12 @@ export function showLoadMoreButton() {
   loadMoreBtn.classList.remove('hidden');
 }
 
-export function showLoader(element = loaderEl) {
-  element.classList.remove('hidden');
+export function showLoader(element) {
+  const el = element ?? document.querySelector('.loader');
+  el.classList.remove('hidden');
 }
 
-export function hideLoader(element = loaderEl) {
-  element.classList.add('hidden');
+export function hideLoader(element) {
+  const el = element ?? document.querySelector('.loader');
+  el.classList.add('hidden');
 }
